@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>쏜파이 — Portfolio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Serif+KR:wght@300;400;600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ivory: '#F5F0E8',
+            'ivory-dark': '#EDE8DD',
+            'ivory-surface': '#FDFAF4',
+            ink: '#1A1814',
+            'ink-muted': '#6B6560',
+            accent: '#D4A800',
+            'accent-light': '#F5C800',
+            'accent-pale': '#FFF8DC',
+            border: '#D9D3C7',
+          },
+          fontFamily: {
+            display: ['Cormorant Garamond', 'Noto Serif KR', 'serif'],
+            body: ['Inter', 'Noto Serif KR', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            korean: ['Noto Serif KR', 'serif'],
+          },
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --color-bg: #F5F0E8;
+      --color-surface: #FDFAF4;
+      --color-surface-2: #EDE8DD;
+      --color-ink: #1A1814;
+      --color-ink-muted: #6B6560;
+      --color-accent: #D4A800;
+      --color-accent-light: #F5C800;
+      --color-border: #D9D3C7;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background-color: var(--color-bg);
+      color: var(--color-ink);
+      font-family: 'Inter', 'Noto Serif KR', sans-serif;
+    }
+
+    /* Custom cursor */
+    .custom-cursor {
+      width: 10px;
+      height: 10px;
+      background: var(--color-accent);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: opacity 0.3s;
+    }
+
+    /* Reveal animation */
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    [data-reveal].is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Stagger delays */
+    [data-delay="100"] { transition-delay: 100ms; }
+    [data-delay="200"] { transition-delay: 200ms; }
+    [data-delay="300"] { transition-delay: 300ms; }
+    [data-delay="400"] { transition-delay: 400ms; }
+    [data-delay="500"] { transition-delay: 500ms; }
+
+    /* Hero name fluid font */
+    .hero-name {
+      font-size: clamp(3.5rem, 12vw, 9rem);
+      font-family: 'Cormorant Garamond', 'Noto Serif KR', serif;
+      font-weight: 300;
+      line-height: 1;
+      letter-spacing: -0.02em;
+    }
+
+    /* Gold rule */
+    .accent-rule {
+      width: 60px;
+      height: 2px;
+      background: var(--color-accent);
+      margin: 1.5rem auto;
+    }
+
+    /* Section label */
+    .section-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      color: var(--color-ink-muted);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    /* Navbar */
+    #navbar {
+      transition: background 0.3s, backdrop-filter 0.3s, border-color 0.3s;
+    }
+    #navbar.scrolled {
+      background: rgba(245, 240, 232, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    /* Nav links */
+    .nav-link {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--color-ink-muted);
+      transition: color 0.2s;
+      text-transform: uppercase;
+    }
+    .nav-link:hover,
+    .nav-link.active {
+      color: var(--color-accent);
+    }
+
+    /* Scroll indicator */
+    .scroll-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--color-accent);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: translateY(0); }
+      50% { opacity: 0.4; transform: translateY(6px); }
+    }
+
+    /* Skill tags */
+    .skill-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      padding: 0.4rem 1rem;
+      border: 1px solid var(--color-border);
+      background: var(--color-accent-pale, #FFF8DC);
+      color: var(--color-ink);
+      border-radius: 2px;
+      letter-spacing: 0.05em;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .skill-tag:hover {
+      border-color: var(--color-accent);
+      background: #FFF3B0;
+    }
+
+    /* Project cards */
+    .project-card {
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      overflow: hidden;
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+                  box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .project-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 40px rgba(26, 24, 20, 0.1);
+    }
+    .card-strip {
+      height: 3px;
+    }
+    .strip-python { background: var(--color-accent); }
+    .strip-js { background: var(--color-accent-light); }
+
+    /* Status badge */
+    .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      padding: 0.2rem 0.5rem;
+      border-radius: 2px;
+      text-transform: uppercase;
+    }
+    .badge-done {
+      background: #E8F5E9;
+      color: #2E7D32;
+      border: 1px solid #A5D6A7;
+    }
+    .badge-wip {
+      background: #FFF8DC;
+      color: #A67C00;
+      border: 1px solid var(--color-accent);
+    }
+
+    /* Tech tags */
+    .tech-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      padding: 0.15rem 0.5rem;
+      background: var(--color-surface-2, #EDE8DD);
+      border: 1px solid var(--color-border);
+      border-radius: 2px;
+      color: var(--color-ink-muted);
+    }
+
+    /* Email button */
+    .email-btn {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      padding: 1rem 2.5rem;
+      border: 2px solid var(--color-accent);
+      color: var(--color-ink);
+      background: transparent;
+      border-radius: 2px;
+      cursor: pointer;
+      letter-spacing: 0.05em;
+      transition: background 0.2s, color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .email-btn:hover {
+      background: var(--color-accent);
+      color: #1A1814;
+    }
+
+    /* Toast */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--color-ink);
+      color: var(--color-ivory, #F5F0E8);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+                  opacity 0.3s;
+      pointer-events: none;
+      z-index: 1000;
+    }
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Mobile menu */
+    #mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--color-bg);
+      z-index: 100;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+    }
+    #mobile-menu.open {
+      display: flex;
+    }
+    .mobile-nav-link {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: var(--color-ink);
+      text-decoration: none;
+      letter-spacing: 0.05em;
+    }
+    .mobile-nav-link:hover {
+      color: var(--color-accent);
+    }
+
+    /* Hamburger */
+    .hamburger span {
+      display: block;
+      width: 24px;
+      height: 1.5px;
+      background: var(--color-ink);
+      transition: transform 0.3s, opacity 0.3s;
+      margin: 5px 0;
+    }
+    .hamburger.open span:nth-child(1) {
+      transform: translateY(6.5px) rotate(45deg);
+    }
+    .hamburger.open span:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.open span:nth-child(3) {
+      transform: translateY(-6.5px) rotate(-45deg);
+    }
+
+    /* Cursor - only on pointer devices */
+    @media (pointer: coarse) {
+      .custom-cursor { display: none; }
+    }
+
+    /* Typing cursor blink */
+    .type-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1em;
+      background: var(--color-accent);
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 1s step-end infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* About stats card */
+    .stat-card {
+      border: 1px solid var(--color-border);
+      background: var(--color-surface);
+      padding: 1.5rem;
+      border-radius: 4px;
+    }
+    .stat-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: var(--color-accent);
+      line-height: 1;
+    }
+
+    /* Section heading */
+    .section-heading {
+      font-family: 'Cormorant Garamond', 'Noto Serif KR', serif;
+      font-weight: 300;
+      line-height: 1.2;
+    }
+
+    /* No-JS fallback */
+    noscript style { display: none; }
+  </style>
+  <noscript>
+    <style>
+      [data-reveal] { opacity: 1 !important; transform: none !important; }
+    </style>
+  </noscript>
+</head>
+<body class="bg-ivory text-ink">
+
+  <!-- Custom cursor -->
+  <div class="custom-cursor" id="cursor"></div>
+
+  <!-- ─── NAVBAR ───────────────────────────────────────── -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 px-6 md:px-12 lg:px-20 py-5">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+      <a href="#hero" class="font-display text-xl font-light tracking-wide text-ink hover:text-accent transition-colors">쏜파이</a>
+      <!-- Desktop links -->
+      <div class="hidden md:flex items-center gap-8">
+        <a href="#about" class="nav-link" data-section="about">About</a>
+        <a href="#skills" class="nav-link" data-section="skills">Skills</a>
+        <a href="#projects" class="nav-link" data-section="projects">Projects</a>
+        <a href="#contact" class="nav-link" data-section="contact">Contact</a>
+      </div>
+      <!-- Hamburger -->
+      <button class="hamburger md:hidden flex flex-col justify-center" id="hamburger" aria-label="메뉴">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ─── MOBILE MENU ───────────────────────────────────── -->
+  <div id="mobile-menu">
+    <a href="#about" class="mobile-nav-link">About</a>
+    <a href="#skills" class="mobile-nav-link">Skills</a>
+    <a href="#projects" class="mobile-nav-link">Projects</a>
+    <a href="#contact" class="mobile-nav-link">Contact</a>
+  </div>
+
+  <!-- ─── HERO ─────────────────────────────────────────── -->
+  <section id="hero" class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative">
+    <div>
+      <p class="section-label mb-8">[ PORTFOLIO ]</p>
+      <div class="mb-6 flex justify-center">
+        <img src="profile.png" alt="쏜파이" class="w-40 h-40 md:w-48 md:h-48 object-contain">
+      </div>
+      <h1 class="hero-name text-ink mb-0">쏜파이</h1>
+      <div class="accent-rule"></div>
+      <p class="font-mono text-sm tracking-widest text-ink-muted mb-3">
+        <span id="typed-text"></span><span class="type-cursor" id="type-cursor"></span>
+      </p>
+      <p class="font-korean text-ink-muted text-base font-light mt-4 max-w-md mx-auto leading-relaxed">
+        퇴근 후 코드를 씁니다
+      </p>
+    </div>
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-10 flex flex-col items-center gap-2">
+      <p class="font-mono text-xs tracking-widest text-ink-muted opacity-60">SCROLL</p>
+      <div class="scroll-dot"></div>
+    </div>
+  </section>
+
+  <!-- ─── ABOUT ─────────────────────────────────────────── -->
+  <section id="about" class="py-24 px-6 bg-ivory-dark">
+    <div class="max-w-5xl mx-auto">
+      <p class="section-label" data-reveal>[ 01 / ABOUT ]</p>
+      <h2 class="section-heading text-4xl md:text-5xl mb-12 text-ink" data-reveal data-delay="100">저에 대해서</h2>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <!-- Bio -->
+        <div data-reveal data-delay="200">
+          <p class="font-korean text-lg leading-loose text-ink-muted font-light mb-6">
+            평범한 직장인인데, 퇴근후에는 취미로 프로그램을 만드는 사람입니다.
+          </p>
+          <p class="font-body text-base leading-relaxed text-ink-muted">
+            낮에는 사무실에서 일하고, 밤에는 키보드 앞에 앉아 새로운 것을 만듭니다.
+            일상의 불편함을 코드로 해결하는 것을 즐기고, 조금씩 더 나은 도구를 만들어가고 있습니다.
+          </p>
+          <div class="mt-8 w-10 h-px bg-accent"></div>
+        </div>
+
+        <!-- Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" data-reveal data-delay="300">
+          <div class="stat-card">
+            <div class="stat-number">2+</div>
+            <p class="font-mono text-xs tracking-widest text-ink-muted mt-2 uppercase">Years Coding</p>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">JS</div>
+            <p class="font-mono text-xs tracking-widest text-ink-muted mt-2 uppercase">+ Python</p>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">3+</div>
+            <p class="font-mono text-xs tracking-widest text-ink-muted mt-2 uppercase">Side Projects</p>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">∞</div>
+            <p class="font-mono text-xs tracking-widest text-ink-muted mt-2 uppercase">Curiosity</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SKILLS ────────────────────────────────────────── -->
+  <section id="skills" class="py-24 px-6 bg-ivory">
+    <div class="max-w-5xl mx-auto">
+      <p class="section-label" data-reveal>[ 02 / SKILLS ]</p>
+      <h2 class="section-heading text-4xl md:text-5xl mb-12 text-ink" data-reveal data-delay="100">기술 스택</h2>
+
+      <div class="space-y-10">
+        <!-- Languages -->
+        <div data-reveal data-delay="200">
+          <p class="font-mono text-xs tracking-widest text-ink-muted uppercase mb-4">Languages</p>
+          <div class="flex flex-wrap gap-3">
+            <span class="skill-tag">JavaScript</span>
+            <span class="skill-tag">Python</span>
+          </div>
+        </div>
+
+        <!-- Areas -->
+        <div data-reveal data-delay="300">
+          <p class="font-mono text-xs tracking-widest text-ink-muted uppercase mb-4">Areas</p>
+          <div class="flex flex-wrap gap-3">
+            <span class="skill-tag" data-reveal data-delay="100">Automation</span>
+            <span class="skill-tag" data-reveal data-delay="150">CLI Tools</span>
+            <span class="skill-tag" data-reveal data-delay="200">Web Frontend</span>
+            <span class="skill-tag" data-reveal data-delay="250">Data Collection</span>
+            <span class="skill-tag" data-reveal data-delay="300">Scripting</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PROJECTS ──────────────────────────────────────── -->
+  <section id="projects" class="py-24 px-6 bg-ivory-dark">
+    <div class="max-w-5xl mx-auto">
+      <p class="section-label" data-reveal>[ 03 / PROJECTS ]</p>
+      <h2 class="section-heading text-4xl md:text-5xl mb-4 text-ink" data-reveal data-delay="100">프로젝트</h2>
+      <p class="text-ink-muted font-body text-sm mb-12" data-reveal data-delay="150">퇴근 후 취미로 만든 것들</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+        <!-- Card 1 -->
+        <article class="project-card" data-reveal data-delay="200">
+          <div class="card-strip strip-python"></div>
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="font-display text-xl font-light text-ink">일정 자동화 봇</h3>
+              <span class="badge badge-done ml-2 shrink-0">Done</span>
+            </div>
+            <p class="font-body text-sm text-ink-muted leading-relaxed mb-5">
+              Python으로 만든 반복 업무 자동화 스크립트. 이메일 알림 및 파일 정리 기능 포함.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">Automation</span>
+              <span class="tech-tag">CLI</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 2 -->
+        <article class="project-card" data-reveal data-delay="300">
+          <div class="card-strip strip-js"></div>
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="font-display text-xl font-light text-ink">개인 대시보드</h3>
+              <span class="badge badge-wip ml-2 shrink-0">WIP</span>
+            </div>
+            <p class="font-body text-sm text-ink-muted leading-relaxed mb-5">
+              퇴근 후 개인 일정과 날씨, 할 일 목록을 한 눈에 볼 수 있는 웹 대시보드.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="tech-tag">JavaScript</span>
+              <span class="tech-tag">HTML/CSS</span>
+              <span class="tech-tag">API</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- Card 3 -->
+        <article class="project-card" data-reveal data-delay="400">
+          <div class="card-strip strip-python"></div>
+          <div class="p-6">
+            <div class="flex items-start justify-between mb-3">
+              <h3 class="font-display text-xl font-light text-ink">데이터 수집기</h3>
+              <span class="badge badge-done ml-2 shrink-0">Done</span>
+            </div>
+            <p class="font-body text-sm text-ink-muted leading-relaxed mb-5">
+              관심 있는 웹사이트의 데이터를 주기적으로 수집하고 CSV로 저장하는 도구.
+            </p>
+            <div class="flex flex-wrap gap-2">
+              <span class="tech-tag">Python</span>
+              <span class="tech-tag">BeautifulSoup</span>
+              <span class="tech-tag">Data</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── CONTACT ───────────────────────────────────────── -->
+  <section id="contact" class="py-24 px-6 bg-ivory">
+    <div class="max-w-2xl mx-auto text-center">
+      <p class="section-label" data-reveal>[ 04 / CONTACT ]</p>
+      <h2 class="section-heading text-4xl md:text-5xl mb-4 text-ink" data-reveal data-delay="100">함께 만들어봐요</h2>
+      <p class="font-korean text-ink-muted text-base leading-relaxed mb-12" data-reveal data-delay="200">
+        궁금한 점이나 협업 제안이 있다면 편하게 연락주세요.
+      </p>
+
+      <div data-reveal data-delay="300">
+        <button class="email-btn" id="email-copy" aria-label="이메일 복사">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+          as1984as@gmail.com
+        </button>
+        <p class="font-mono text-xs text-ink-muted mt-3 tracking-wider opacity-60">클릭하면 복사됩니다</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ────────────────────────────────────────── -->
+  <footer class="py-8 px-6 border-t border-border">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
+      <span class="font-mono text-xs text-ink-muted tracking-widest">쏜파이 © 2026</span>
+      <span class="font-mono text-xs text-ink-muted tracking-widest opacity-50">Made with care after work</span>
+    </div>
+  </footer>
+
+  <!-- Toast -->
+  <div id="toast">이메일이 복사되었습니다 ✓</div>
+
+  <script>
+    // ── Custom cursor ──
+    const cursor = document.getElementById('cursor');
+    let mouseX = 0, mouseY = 0;
+    let curX = 0, curY = 0;
+
+    document.addEventListener('mousemove', e => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function animateCursor() {
+      curX += (mouseX - curX) * 0.15;
+      curY += (mouseY - curY) * 0.15;
+      cursor.style.left = curX + 'px';
+      cursor.style.top = curY + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    // ── Navbar scroll effect ──
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 30) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+    });
+
+    // ── Active nav link ──
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link[data-section]');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop - 120;
+        if (window.scrollY >= sectionTop) {
+          current = section.getAttribute('id');
+        }
+      });
+      navLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.section === current);
+      });
+    });
+
+    // ── Scroll reveal ──
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('[data-reveal]').forEach(el => {
+      revealObserver.observe(el);
+    });
+
+    // ── Typing effect ──
+    const typedText = document.getElementById('typed-text');
+    const typeCursor = document.getElementById('type-cursor');
+    const text = '일반기업 사무직 · Hobby Developer';
+    let i = 0;
+
+    function typeChar() {
+      if (i < text.length) {
+        typedText.textContent += text[i];
+        i++;
+        setTimeout(typeChar, 65);
+      } else {
+        setTimeout(() => {
+          typeCursor.style.animation = 'none';
+          typeCursor.style.opacity = '0';
+          setTimeout(() => { typeCursor.style.display = 'none'; }, 300);
+        }, 2500);
+      }
+    }
+
+    setTimeout(typeChar, 800);
+
+    // ── Email copy ──
+    const emailBtn = document.getElementById('email-copy');
+    const toast = document.getElementById('toast');
+    let toastTimer;
+
+    emailBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText('as1984as@gmail.com').then(() => {
+        showToast();
+      }).catch(() => {
+        // Fallback for environments without clipboard API
+        showToast();
+      });
+    });
+
+    function showToast() {
+      clearTimeout(toastTimer);
+      toast.classList.add('show');
+      toastTimer = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    // ── Hamburger / mobile menu ──
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.contains('open');
+      hamburger.classList.toggle('open');
+      mobileMenu.classList.toggle('open');
+      document.body.style.overflow = isOpen ? '' : 'hidden';
+    });
+
+    document.querySelectorAll('.mobile-nav-link').forEach(link => {
+      link.addEventListener('click', () => {
+        hamburger.classList.remove('open');
+        mobileMenu.classList.remove('open');
+        document.body.style.overflow = '';
+      });
+    });
+  </script>
+</body>
+</html>
